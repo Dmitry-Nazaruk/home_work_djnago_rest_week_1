@@ -1,10 +1,14 @@
 from django.shortcuts import render
 from rest_framework.decorators import api_view
+from rest_framework.mixins import ListModelMixin, CreateModelMixin, RetrieveModelMixin
 from rest_framework.response import Response
 from datetime import datetime
 from rest_api.models import Store
 from rest_project.serializers import StoreSerializer
 from rest_framework.status import HTTP_201_CREATED
+from rest_framework.viewsets import ModelViewSet, GenericViewSet
+from rest_framework.permissions import IsAuthenticated
+
 # Create your views here.
 
 
@@ -67,3 +71,17 @@ def create_store(request):
     serializer.is_valid(raise_exception=True)
     Store.objects.create(**serializer.validated_data)
     return Response(status=HTTP_201_CREATED, data=serializer.data)
+
+
+class StoreViewSet(ModelViewSet):
+    queryset = Store.objects.all()
+    serializer_class = StoreSerializer
+    permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        serializer.save(**{'owner': self.request.user})
+
+class StoreGenericViewSet(GenericViewSet, ListModelMixin, CreateModelMixin, RetrieveModelMixin):
+    queryset = Store.objects.all()
+    serializer_class = StoreSerializer
+

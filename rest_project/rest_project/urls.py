@@ -18,6 +18,9 @@ from django.urls import path, include
 from rest_api.views import today, helloworld, myname, calculator
 from .serializers import StoreSerializer
 from rest_api import views
+
+from rest_api.urls import router
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api-auth/', include('rest_framework.urls')),
@@ -26,5 +29,7 @@ urlpatterns = [
     path('my_name', myname),
     path('calculator', calculator ),
     path('store', views.all_store),
-    path('create_store', views.create_store)
+    path('create_store', views.create_store),
+    path('my_stores/', include(router.urls)),
+    path('stores_genericviewset/', include(router.urls))
 ]
